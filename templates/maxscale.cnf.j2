@@ -1,0 +1,89 @@
+# MaxScale config document
+
+[maxscale]
+threads={{ maxscale_threads }}
+syslog=0
+maxlog=1
+log_to_shm=1
+log_warning=1
+log_notice={{ maxscale_log_notice }}
+log_info={{ maxscale_log_info }}
+log_debug={{ maxscale_log_debug }}
+
+[qla]
+type=filter
+module=qlafilter
+filebase=/tmp/SqlQueryLog
+
+[fetch]
+type=filter
+module=regexfilter
+match=fetch
+replace=select
+
+# --------------------------------------------------------------------------
+# Monitors
+# --------------------------------------------------------------------------
+[Galera Monitor]
+type=monitor
+module=galeramon
+{% for key, value in config.iteritems() %}
+{{ key }}={{ value }}
+{% endfor %}
+user={{ maxscale_user }}
+passwd={{ vault_maxscale_pw }}
+monitor_interval=2000
+disable_master_failback=1
+available_when_donor=1
+
+
+# --------------------------------------------------------------------------
+# Router
+# --------------------------------------------------------------------------
+[RW Split Router]
+type=service
+router=readwritesplit
+{% for key, value in config.iteritems() %}
+{{ key }}={{ value }}
+{% endfor %}
+user={{ maxscale_user }}
+passwd={{ vault_maxscale_pw }}
+max_slave_conntections=100%
+max_slave_replication_lag=30
+
+# --------------------------------------------------------------------------
+# CLI
+# --------------------------------------------------------------------------
+[CLI]
+type=service
+router=cli
+
+
+# --------------------------------------------------------------------------
+# Listener
+# --------------------------------------------------------------------------
+[RW Split Listener]
+type=listener
+service=RW Split Router
+protocol=MySQLClient
+port=3306
+
+[CLI Listener]
+type=listener
+service=CLI
+protocol=maxscaled
+address=127.0.0.1
+port=6603
+
+# --------------------------------------------------------------------------
+# Servers
+# --------------------------------------------------------------------------
+{% for server in maxscale_servers %}
+[{{ server.name }}]
+type=server
+address={{ server.address }}
+port={{ server.port | default('3306') }}
+protocol=MySQLBackend
+
+{% endfor %}
+

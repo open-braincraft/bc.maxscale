@@ -1,0 +1,33 @@
+---
+# tasks file for bc.maxscale
+- name: install libcurl3 
+  apt:
+    name: libcurl3
+    state: present
+
+- name: download maxscale deb package
+    shell: wget https://downloads.mariadb.com/MaxScale/2.0.1-oct27/ubuntu/dists/           xenial/main/binary-amd64/maxscale-2.0.1-2.ubuntu.xenial.x86_64.deb 
+
+- name: install Maxscale
+    shell: dpkg -i maxscale-2.0.1-2.ubuntu.xenial.x86_64.deb
+
+- name: install firewall
+  apt:
+    name: ufw
+    state: present
+
+- name: ufw allow 6603 / 4442
+    shell: ufw allow {{ item }}
+    with_item:
+      - 6603
+      - 4442
+
+- name: backup from maxscale.cnf file
+  shell: mv /etc/maxscale.cnf /etc/maxscale.cnf.bak
+
+- name: create maxscale.cnf with an template
+  template:
+    src: /templates/maxscale/maxscale.cnf.j2
+    dest: /etc/maxscale/maxscale.cnf
+    mode: 0644
+  notify: restart maxscale

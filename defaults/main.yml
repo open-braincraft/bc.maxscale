@@ -1,0 +1,19 @@
+---
+# defaults file for bc.maxscale
+
+maxscale_threads: 4
+maxscale_log_notice: 1
+maxscale_log_info: 0
+maxscale_log_debug: 0
+
+maxscale_user: "maxscale"
+vault_maxscale_pw:
+
+maxscale_servers: []
+#
+#  - name:
+#    address:
+#    port:
+#  - name:
+#    address:
+#    port:
