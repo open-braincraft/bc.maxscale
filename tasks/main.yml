@@ -1,12 +1,12 @@
 ---
 # tasks file for bc.maxscale
-- name: install libcurl3 
+- name: install libcurl3
   apt:
     name: libcurl3
     state: present
 
 - name: download maxscale deb package
-    shell: wget https://downloads.mariadb.com/MaxScale/2.0.1-oct27/ubuntu/dists/           xenial/main/binary-amd64/maxscale-2.0.1-2.ubuntu.xenial.x86_64.deb 
+    shell: wget https://downloads.mariadb.com/MaxScale/2.0.1-oct27/ubuntu/dists/xenial/main/binary-amd64/maxscale-2.0.1-2.ubuntu.xenial.x86_64.deb 
 
 - name: install Maxscale
     shell: dpkg -i maxscale-2.0.1-2.ubuntu.xenial.x86_64.deb
