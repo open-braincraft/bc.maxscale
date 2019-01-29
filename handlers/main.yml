@@ -2,6 +2,6 @@
 # handlers file for bc.maxscale
 #
 - name: restart maxscale
-  service: 
+  service:
     name: maxscale
-    state: restarted 
+    state: restarted

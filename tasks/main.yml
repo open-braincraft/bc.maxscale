@@ -5,22 +5,10 @@
     name: libcurl3
     state: present
 
-- name: download maxscale deb package
-    shell: wget https://downloads.mariadb.com/MaxScale/2.0.1-oct27/ubuntu/dists/xenial/main/binary-amd64/maxscale-2.0.1-2.ubuntu.xenial.x86_64.deb 
-
-- name: install Maxscale
-    shell: dpkg -i maxscale-2.0.1-2.ubuntu.xenial.x86_64.deb
-
-- name: install firewall
+- name: install maxscale
   apt:
-    name: ufw
+    name: maxscale
     state: present
-
-- name: ufw allow 6603 / 4442
-    shell: ufw allow {{ item }}
-    with_item:
-      - 6603
-      - 4442
 
 - name: backup from maxscale.cnf file
   shell: mv /etc/maxscale.cnf /etc/maxscale.cnf.bak

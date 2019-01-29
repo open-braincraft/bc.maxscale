@@ -27,15 +27,12 @@ replace=select
 [Galera Monitor]
 type=monitor
 module=galeramon
-{% for key, value in config.iteritems() %}
-{{ key }}={{ value }}
-{% endfor %}
+servers="{% for node in galera_cluster_nodes %}{{ node }}{% if not loop.last %},{% endif %}{% endfor %}"
 user={{ maxscale_user }}
-passwd={{ vault_maxscale_pw }}
+passwd={{ maxscale_root_pw }}
 monitor_interval=2000
 disable_master_failback=1
 available_when_donor=1
-
 
 # --------------------------------------------------------------------------
 # Router
@@ -43,21 +40,11 @@ available_when_donor=1
 [RW Split Router]
 type=service
 router=readwritesplit
-{% for key, value in config.iteritems() %}
-{{ key }}={{ value }}
-{% endfor %}
+servers="{% for node in galera_cluster_nodes %}{{ node }}{% if not loop.last %},{% endif %}{% endfor %}"
 user={{ maxscale_user }}
-passwd={{ vault_maxscale_pw }}
+passwd={{ maxscale_root_pw }}
 max_slave_conntections=100%
 max_slave_replication_lag=30
-
-# --------------------------------------------------------------------------
-# CLI
-# --------------------------------------------------------------------------
-[CLI]
-type=service
-router=cli
-
 
 # --------------------------------------------------------------------------
 # Listener
@@ -68,21 +55,14 @@ service=RW Split Router
 protocol=MySQLClient
 port=3306
 
-[CLI Listener]
-type=listener
-service=CLI
-protocol=maxscaled
-address=127.0.0.1
-port=6603
-
 # --------------------------------------------------------------------------
 # Servers
 # --------------------------------------------------------------------------
-{% for server in maxscale_servers %}
-[{{ server.name }}]
+{% for iterator in 0..galera_loop_count %}
+[ "{{ galera_nodes[{{ iterator }}] }}" ]
 type=server
-address={{ server.address }}
-port={{ server.port | default('3306') }}
+address="{{ galera_ip_addr[{{ iterator }}] }}"
+port="{{ port | default('3306') }}"
 protocol=MySQLBackend
 
 {% endfor %}

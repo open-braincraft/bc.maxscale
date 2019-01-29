@@ -7,9 +7,13 @@ maxscale_log_info: 0
 maxscale_log_debug: 0
 
 maxscale_user: "maxscale"
-vault_maxscale_pw:
+maxscale_root_pw: "CHANGE_ME"
 
-maxscale_servers: []
+galera_loop_count: # count of nodes minus 1
+
+galera_nodes: []
+galera_ip_addr: []
+port: 3306
 #
 #  - name:
 #    address:
