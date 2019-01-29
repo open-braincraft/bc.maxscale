@@ -10,12 +10,8 @@
     name: maxscale
     state: present
 
-- name: backup from maxscale.cnf file
-  shell: mv /etc/maxscale.cnf /etc/maxscale.cnf.bak
-
 - name: create maxscale.cnf with an template
   template:
-    src: /templates/maxscale/maxscale.cnf.j2
-    dest: /etc/maxscale/maxscale.cnf
-    mode: 0644
+    src: templates/maxscale.cnf.j2
+    dest: /etc/maxscale.cnf
   notify: restart maxscale

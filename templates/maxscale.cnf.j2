@@ -27,7 +27,7 @@ replace=select
 [Galera Monitor]
 type=monitor
 module=galeramon
-servers="{% for node in galera_cluster_nodes %}{{ node }}{% if not loop.last %},{% endif %}{% endfor %}"
+servers="{{ galera_cluster_nodes | join (',') }}"
 user={{ maxscale_user }}
 passwd={{ maxscale_root_pw }}
 monitor_interval=2000
@@ -40,7 +40,7 @@ available_when_donor=1
 [RW Split Router]
 type=service
 router=readwritesplit
-servers="{% for node in galera_cluster_nodes %}{{ node }}{% if not loop.last %},{% endif %}{% endfor %}"
+servers="{{ galera_cluster_nodes | join (',') }}"
 user={{ maxscale_user }}
 passwd={{ maxscale_root_pw }}
 max_slave_conntections=100%
@@ -58,12 +58,11 @@ port=3306
 # --------------------------------------------------------------------------
 # Servers
 # --------------------------------------------------------------------------
-{% for iterator in 0..galera_loop_count %}
-[ "{{ galera_nodes[{{ iterator }}] }}" ]
+{% for nodes in galera_cluster_nodes %}
+[{{ nodes }}]
 type=server
-address="{{ galera_ip_addr[{{ iterator }}] }}"
+address="{{ galera_cluster_ip_addr[loop.index0] }}"
 port="{{ port | default('3306') }}"
 protocol=MySQLBackend
 
 {% endfor %}
-
